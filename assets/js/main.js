@@ -221,16 +221,46 @@ class MainScene extends Phaser.Scene {
     */
 
     setupPlayer() {
-        const bottomPlatform = this.platforms.getChildren()[0];
-        this.player = this.physics.add.existing(
-            this.add.rectangle(bottomPlatform.x, bottomPlatform.y - 40, 30, 30, 0x0000aa)
-        );
-        this.player.body.setCollideWorldBounds(false).setBounce(0).allowGravity = false;
-        this.player.setData('isAlive', true);
-        this.maxPlayerY = this.player.y;
-        this.playerColor = 0x0000aa;
-        this.originalPlayerJumpSpeed = -550;
-    }
+            const bottomPlatform = this.platforms.getChildren()[0];
+
+            // Dimensiones del círculo
+            const diameter = 30;
+            const radius = diameter / 2;
+            const gradientKey = 'player-gradient-circle';
+
+            // Crear un canvas temporal
+            const rt = this.textures.createCanvas(gradientKey, diameter, diameter);
+            const ctx = rt.getContext();
+
+            // Crear degradado radial centrado en el círculo
+            const gradient = ctx.createLinearGradient(0, 0, 0, diameter);
+            gradient.addColorStop(0, '#F55730');   // parte superior (rojo-naranja)
+            gradient.addColorStop(0.5, '#FFB80B'); // centro (amarillo)
+            gradient.addColorStop(1, '#106A12');   // parte inferior (verde)
+
+            // Dibujar un círculo relleno con el degradado
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(radius, radius, radius, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Actualizar la textura
+            rt.refresh();
+
+            // Crear el sprite circular usando la textura
+            this.player = this.physics.add.sprite(bottomPlatform.x, bottomPlatform.y - 40, gradientKey);
+
+            // Ajustes de física
+            this.player.body.setCircle(radius); // hitbox circular
+            this.player.body.setCollideWorldBounds(false).setBounce(0).allowGravity = false;
+
+            // Metadata
+            this.player.setData('isAlive', true);
+            this.maxPlayerY = this.player.y;
+            this.playerColor = gradientKey;
+            this.originalPlayerJumpSpeed = -550;
+        }
 
     handlePlayerMovement() {
         const moveSpeed = 200;
