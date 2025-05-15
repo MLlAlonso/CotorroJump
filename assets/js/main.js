@@ -39,7 +39,7 @@ class MainScene extends Phaser.Scene {
         // Cargamos los archivos de sonido
         this.load.audio('jump', 'assets/sounds/jump.wav');
         this.load.audio('star', 'assets/sounds/Cortinilla.wav');
-        this.load.audio('hit', 'assets/sounds/hitHurt.wav');
+        this.load.audio('hit', 'assets/sounds/hitHurt.mp3');
         this.load.audio('pickup', 'assets/sounds/pickup.wav');
     }
 
