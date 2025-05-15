@@ -48,7 +48,7 @@ canvas {
   font-size: 32px;
   border: none;
   border-radius: 12px;
-  background: linear-gradient(108deg, #2A67FB 0%, #0E4DF1 62.02%);
+  background: linear-gradient(108deg, #F1DA10 0%, #84CA33 62.02%);
   pointer-events: auto;
   touch-action: manipulation;
   user-select: none;

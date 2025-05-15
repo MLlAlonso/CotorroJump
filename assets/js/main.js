@@ -83,14 +83,23 @@ class MainScene extends Phaser.Scene {
     setupText() {
         this.startText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Presiona espacio o toca para comenzar', {
             fontSize: '15px',
-            fill: '#000',
+            fill: '#fff',
             padding: { x: 10, y: 6 },
             align: 'center'
         }).setOrigin(0.5);
 
-        this.scoreText = this.add.text(10, 10, 'Puntos: 0', {
+        // Texto "Puntaje"
+        this.scoreLabel = this.add.text(10, 10, 'Puntos:', {
+            fontSize: '18px',
+            fill: '#fff',
+            backgroundColor: '#7EC131',
+            padding: { x: 10, y: 5 }
+        }).setScrollFactor(0).setDepth(10);
+
+        this.scoreText = this.add.text(this.scoreLabel.x + this.scoreLabel.width, 10, '0', {
             fontSize: '18px',
             fill: '#000',
+            backgroundColor: '#fff',
             padding: { x: 10, y: 5 }
         }).setScrollFactor(0).setDepth(10);
     }
@@ -221,46 +230,46 @@ class MainScene extends Phaser.Scene {
     */
 
     setupPlayer() {
-            const bottomPlatform = this.platforms.getChildren()[0];
+        const bottomPlatform = this.platforms.getChildren()[0];
 
-            // Dimensiones del círculo
-            const diameter = 30;
-            const radius = diameter / 2;
-            const gradientKey = 'player-gradient-circle';
+        // Dimensiones del círculo
+        const diameter = 30;
+        const radius = diameter / 2;
+        const gradientKey = 'player-gradient-circle';
 
-            // Crear un canvas temporal
-            const rt = this.textures.createCanvas(gradientKey, diameter, diameter);
-            const ctx = rt.getContext();
+        // Crear un canvas temporal
+        const rt = this.textures.createCanvas(gradientKey, diameter, diameter);
+        const ctx = rt.getContext();
 
-            // Crear degradado radial centrado en el círculo
-            const gradient = ctx.createLinearGradient(0, 0, 0, diameter);
-            gradient.addColorStop(0, '#F55730');   // parte superior (rojo-naranja)
-            gradient.addColorStop(0.5, '#FFB80B'); // centro (amarillo)
-            gradient.addColorStop(1, '#106A12');   // parte inferior (verde)
+        // Crear degradado radial centrado en el círculo
+        const gradient = ctx.createLinearGradient(0, 0, 0, diameter);
+        gradient.addColorStop(0, '#F55730');   // parte superior (rojo-naranja)
+        gradient.addColorStop(0.5, '#FFB80B'); // centro (amarillo)
+        gradient.addColorStop(1, '#106A12');   // parte inferior (verde)
 
-            // Dibujar un círculo relleno con el degradado
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(radius, radius, radius, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
+        // Dibujar un círculo relleno con el degradado
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(radius, radius, radius, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.fill();
 
-            // Actualizar la textura
-            rt.refresh();
+        // Actualizar la textura
+        rt.refresh();
 
-            // Crear el sprite circular usando la textura
-            this.player = this.physics.add.sprite(bottomPlatform.x, bottomPlatform.y - 40, gradientKey);
+        // Crear el sprite circular usando la textura
+        this.player = this.physics.add.sprite(bottomPlatform.x, bottomPlatform.y - 40, gradientKey);
 
-            // Ajustes de física
-            this.player.body.setCircle(radius); // hitbox circular
-            this.player.body.setCollideWorldBounds(false).setBounce(0).allowGravity = false;
+        // Ajustes de física
+        this.player.body.setCircle(radius); // hitbox circular
+        this.player.body.setCollideWorldBounds(false).setBounce(0).allowGravity = false;
 
-            // Metadata
-            this.player.setData('isAlive', true);
-            this.maxPlayerY = this.player.y;
-            this.playerColor = gradientKey;
-            this.originalPlayerJumpSpeed = -550;
-        }
+        // Metadata
+        this.player.setData('isAlive', true);
+        this.maxPlayerY = this.player.y;
+        this.playerColor = gradientKey;
+        this.originalPlayerJumpSpeed = -550;
+    }
 
     handlePlayerMovement() {
         const moveSpeed = 200;
@@ -360,7 +369,7 @@ class MainScene extends Phaser.Scene {
                 this.jumpSound.play(); // Reproducir el sonido de salto aquí
                 if (platform.y < this.lastTouchedPlatformY) {
                     this.lastTouchedPlatformY = platform.y;
-                    this.scoreText.setText('Puntos: ' + (++this.score));
+                    this.scoreText.setText('' + (++this.score));
                 }
 
                 if (platform.type === 'bomb') {
@@ -484,7 +493,7 @@ class MainScene extends Phaser.Scene {
             }
         } else if (type === 'score') {
             this.score += 10;
-            this.scoreText.setText('Puntos: ' + this.score);
+            this.scoreText.setText('' + this.score);
             this.pickupSound.play();
         }
 
@@ -511,7 +520,7 @@ class MainScene extends Phaser.Scene {
             this.bootsObject.destroy();
             this.bootsObject = null;
             this.score += 3;
-            this.scoreText.setText('Puntos: ' + this.score);
+            this.scoreText.setText('' + this.score);
             this.pickupSound.play();
         }
     }
@@ -578,7 +587,7 @@ class MainScene extends Phaser.Scene {
         this.handleShieldSpawning(delta);
         this.handleBootsSpawning(delta);
         this.handleBootsEffect(delta);
-        this.bg.tilePositionY = this.cameras.main.scrollY; 
+        this.bg.tilePositionY = this.cameras.main.scrollY;
         this.platforms.children.iterate(platform => {
             if (platform && platform.update) {
                 platform.update();
